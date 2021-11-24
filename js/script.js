@@ -4,11 +4,15 @@ in cui ogni cella contiene un numero tra quelli compresi in un range:
 con difficoltà 1 => tra 1 e 100
 con difficoltà 2 => tra 1 e 81
 con difficoltà 3 => tra 1 e 49
+
+PART 1 
 Il computer deve generare 16 numeri casuali nello stesso range della difficoltà prescelta: le bombe.
 I numeri nella lista delle bombe non possono essere duplicati.
 In seguito l'utente clicca su una cella: se il numero è presente nella lista dei numeri generati abbiamo calpestato una bomba
 e la cella si colora di rosso terminando la partita.
 Altrimenti la cella cliccata si colora di azzurro e l'utente può continuare a cliccare sulle altre celle.
+
+PART 2
 La partita termina quando il giocatore clicca su una bomba o raggiunge il numero massimo possibile di numeri consentiti.
 Al termine della partita il software deve comunicare il punteggio, cioè il numero di volte che l’utente ha cliccato 
 su una cella che non era una bomba.
@@ -17,11 +21,6 @@ BONUS : 1)quando si clicca su una bomba e finisce la partita, evitare che si pos
 
 document.getElementById('play').addEventListener('click', startGame);
 
-// FUNCTIONS DOM 
-// aggiunge classe active allo square cliccato 
-function handleSquareClick() {
-    this.classList.add('active');
-}
 
 // FUNCTIONS 
 
@@ -33,7 +32,10 @@ function startGame () {
     const introText = document.getElementById('intro-text');
     introText.classList.add('hidden');
 
-    // verifica scelta utente 
+    // n bombe presenti nel campo minato
+    const bombsAmount = 16;
+
+    // verifica difficoltà scelta utente 
     let numberOfSquares;
     const levelSelected = parseInt(document.getElementById('levels-game').value);
     if (levelSelected === 0) {
@@ -47,6 +49,9 @@ function startGame () {
         cellDimension = 7;
     }
     
+    // creaimo le bombe presenti nel campo minato 
+    const bombsArray = createBombs(numberOfSquares, bombsAmount );
+    console.log(bombsArray);
 
     //tolgo classe hidden alla main grid e  creo n celle in main grid per n squares
     const mainGrid = document.querySelector('.game-grid');
@@ -62,6 +67,24 @@ function startGame () {
 
         mainGrid.appendChild(newSquareCreated);
     }
+    
+    // FUNCTIONS DOM 
+
+    // verifica se il numero contenuto nella cella selezionata, appartiene a bombsArray.  
+    function handleSquareClick() {
+        
+        // l'utente clicca la cella e ne leggo il contenuto
+        const clickedElement = parseInt(this.querySelector('span').textContent);
+        // console.log(clickedElement);
+
+            // if true = cella colore rosso e termina partita
+            // altrimenti la cella cliccata si colora di azzurro e l'utente può continuare a cliccare 
+        if ( bombsArray.includes(clickedElement) ) {
+            this.classList.add('bomb');
+        } else {
+            this.classList.add('active');
+        }     
+    }
 }
 
 /* function : createCells
@@ -76,28 +99,29 @@ function createCells(number, cellDimension) {
     newSquare.innerHTML = `<span>${number}</span>`;
     newSquare.style.width = `calc(100% / ${cellDimension})`;
     newSquare.style.height = `calc(100% / ${cellDimension})`;
+
     return newSquare;
 }
 
-/*function : createCellsNumbers
-    crea un array di numeri random non ripetuti
-        - limite max del range di numeri 
-
+/*function : createBombs
+    crea un array di numeri non ripetuti che rappresentano le nostre bombe
+        - maxRange = limite max del range di numeri 
+        - numbersOfBombs = numero di elementi nell'array
     return : array */
-function createCellsNumbers(numberOfSquares) {
+function createBombs(maxRange, numbersOfBombs) {
 
-    const numbersArray = [];
-    while (numbersArray.length < numberOfSquares) {
+    const bombsArray = [];
+    while (bombsArray.length < numbersOfBombs) {
         // genera un numero random 
-        const randomNumber = createRandomNumber(1, numberOfSquares );
+        const randomNumber = createRandomNumber(1, maxRange );
 
         // verifica se n contenuto in array se non è contenuto lo inseriamo all'interno
-        if (!numbersArray.includes(randomNumber)) {
-            numbersArray.push(randomNumber);
+        if (!bombsArray.includes(randomNumber)) {
+            bombsArray.push(randomNumber);
         }
     }
-    // console.log(numbersArray);
-    return numbersArray;
+    
+    return bombsArray;
 }
 
 

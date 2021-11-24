@@ -61,15 +61,19 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+    color: white;
 }
 .square.active {
-    background-color: #6495ed;
-    color: white;
+    background-color: #6495ed;  
+}
+.square.bomb {
+    background-color: red;
 }
 .square span {
     display: none;
 }
-.square.active span {
+.square.active span,
+.square.bomb span {
     display: block;
 }
 /* FOOTER  */
