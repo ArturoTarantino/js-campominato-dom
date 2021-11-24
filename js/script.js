@@ -28,7 +28,7 @@ document.getElementById('play').addEventListener('click', startGame);
 // scatena l'evento al click del play button 
 function startGame () {
 
-    // aggiungo classe hidden h2 nel main 
+    // aggiungo classe hidden h2 intro-text nel main 
     const introText = document.getElementById('intro-text');
     introText.classList.add('hidden');
 
@@ -51,13 +51,25 @@ function startGame () {
     
     // creaimo le bombe presenti nel campo minato 
     const bombsArray = createBombs(numberOfSquares, bombsAmount );
-    console.log(bombsArray);
+    // console.log(bombsArray);
 
-    //tolgo classe hidden alla main grid e  creo n celle in main grid per n squares
+    // calcolare numero massimo di tentativi utente che ne decretano la vittoria
+    const maxAttempts = numberOfSquares - bombsArray.length;
+    // console.log(maxAttempts);
+    
+    // creazione array per contenere tentativi vincenti dell'utente 
+    const rightAttemptsArray = [];
+
+    //creazione n celle in main grid per n squares & remove classe hidden alla main grid 
     const mainGrid = document.querySelector('.game-grid');
     mainGrid.classList.remove('hidden');
+
     // reset main grid dopo ciclo for 
     mainGrid.innerHTML = '';
+    // reset final message 
+    document.getElementById('final-message').classList.add('hidden');
+
+
     for (let i = 1; i <= numberOfSquares; i++ ){
 
         const newSquareCreated = createCells(i, cellDimension);
@@ -81,9 +93,47 @@ function startGame () {
             // altrimenti la cella cliccata si colora di azzurro e l'utente può continuare a cliccare 
         if ( bombsArray.includes(clickedElement) ) {
             this.classList.add('bomb');
+            endGame('lose');
         } else {
             this.classList.add('active');
+            this.style.pointerEvents = "none";
+
+            // push n vincente in array 
+            rightAttemptsArray.push(clickedElement);
+            // console.log(rightAttemptsArray);
+
+            // verifica numero massimo di tentativi per win condition 
+            if(rightAttemptsArray.length >= maxAttempts) {
+                endGame('win');
+            }
         }     
+    }
+
+    // function endgame: gestisce termine partita 
+        // winorlose = stringa win se l'utente ha vinto, lose se ha perso 
+    function endGame(winOrLose) {
+        let finalMessage;
+        if(winOrLose === 'win') {
+
+            finalMessage = 'Complimenti. Hai vinto!';
+        } else {
+
+            finalMessage = 'Peccato, hai perso. Hai azzeccato ' + rightAttemptsArray.length + ' tentativi. Gioca ancora...';
+        }
+        
+        // Output alla fine del main 
+        const finalMessageBox = document.getElementById('final-message');
+        finalMessageBox.innerHTML = finalMessage;
+        finalMessageBox.classList.remove('hidden');
+
+        // Rendere le celle non cliccabili bonus 1
+        const allCells = document.getElementsByClassName('square');
+        for (let i = 0; i < allCells.length; i++) {
+
+            const thisCell = allCells[i];
+            console.log(thisCell);
+            thisCell.style.pointerEvents = "none";
+        }
     }
 }
 
